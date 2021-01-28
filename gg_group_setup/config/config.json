@@ -1,0 +1,30 @@
+{
+  "coreThing" : {
+    "caPath" : "root.ca.pem",
+    "certPath" : "pupu0-core.pem",
+    "keyPath" : "pupu0-core.prv",
+    "thingArn" : "arn:aws-cn:iot:cn-north-1:025989701854:thing/pupu0-core",
+    "iotHost" : "a3l91q6khzvjii.ats.iot.cn-north-1.amazonaws.com.cn",
+    "ggHost" : "greengrass.ats.iot.cn-north-1.amazonaws.com.cn",
+    "keepAlive" : 600
+  },
+  "runtime" : {
+    "cgroup" : {
+      "useSystemd" : "yes"
+    },
+    "allowFunctionsToRunAsRoot" : "yes"
+  },
+  "managedRespawn" : false,
+  "crypto" : {
+    "principals" : {
+      "SecretsManager" : {
+        "privateKeyPath" : "file:///greengrass/certs/pupu0-core.prv"
+      },
+      "IoTCertificate" : {
+        "privateKeyPath" : "file:///greengrass/certs/pupu0-core.prv",
+        "certificatePath" : "file:///greengrass/certs/pupu0-core.pem"
+      }
+    },
+    "caPath" : "file:///greengrass/certs/root.ca.pem"
+  }
+}
