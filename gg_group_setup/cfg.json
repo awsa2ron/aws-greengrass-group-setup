@@ -1,13 +1,13 @@
 {
   "core": {
-    "cert_arn": "",
-    "cert_id": "",
-    "thing_arn": "",
-    "thing_name": ""
+    "cert_arn": "arn:aws-cn:iot:cn-north-1:025989701854:cert/0ac3e3b30a8f8a2a3e1ed17e84be87c12f3e3fa44ad84feed11d3d5da23960c2",
+    "cert_id": "0ac3e3b30a8f8a2a3e1ed17e84be87c12f3e3fa44ad84feed11d3d5da23960c2",
+    "thing_arn": "arn:aws-cn:iot:cn-north-1:025989701854:thing/pupu0-core",
+    "thing_name": "pupu0-core"
   },
   "core_def": {
-    "id": "",
-    "version_arn": ""
+    "id": "b27b4ae3-25bd-47c2-81ad-c68981d75ee8",
+    "version_arn": "arn:aws-cn:greengrass:cn-north-1:025989701854:/greengrass/definition/cores/b27b4ae3-25bd-47c2-81ad-c68981d75ee8/versions/8c0aced2-cc69-47b4-b13b-ded92903a4ea"
   },
   "device_def": {
     "id": "",
@@ -21,33 +21,35 @@
       "thing_name": ""
     }
   },
-    "func_def": {
-        "id": "",
-      "version_arn": "",
-      "environment_variables": {}
+  "func_def": {
+    "environment_variables": {
+      "a1": "1"
     },
-  "group": {
-    "id": "",
-    "name": "fubar-neel",
-    "version": "",
-    "version_arn": ""
+    "id": "716ed162-8fab-4e89-a84b-3078799fb774",
+    "version_arn": "arn:aws-cn:greengrass:cn-north-1:025989701854:/greengrass/definition/functions/716ed162-8fab-4e89-a84b-3078799fb774/versions/d2a1bab3-cb70-4242-af6b-96f19f689c15"
   },
-    "lambda_functions": {
-        "MockDevice": {
-            "arn": "arn:aws:lambda:us-west-2:<account_id>:function:MockDevice:<alias>",
-            "arn_qualifier": "<alias>",
-            "environment_variables": {
-               "<name>": "<value>"
-            }
-        }
-    },
+  "group": {
+    "id": "3b2a0823-5cc2-4ef2-9a21-251b16672039",
+    "name": "pupu0",
+    "version": "bf789133-e45b-4cf6-84cd-b2a982123b0b",
+    "version_arn": "arn:aws-cn:greengrass:cn-north-1:025989701854:/greengrass/groups/3b2a0823-5cc2-4ef2-9a21-251b16672039/versions/bf789133-e45b-4cf6-84cd-b2a982123b0b"
+  },
+  "lambda_functions": {
+    "opcua-adapter": {
+      "arn": "arn:aws-cn:lambda:cn-north-1:025989701854:function:opcua-adapter:pupu1_lambda",
+      "arn_qualifier": "pupu1_lambda",
+      "environment_variables": {
+        "a1": "1"
+      }
+    }
+  },
   "logger_def": {
-    "id": "",
-    "version_arn": ""
+    "id": "b0b439df-d1a6-4868-89e7-020382b70e37",
+    "version_arn": "arn:aws-cn:greengrass:cn-north-1:025989701854:/greengrass/definition/loggers/b0b439df-d1a6-4868-89e7-020382b70e37/versions/d097842c-ba7c-4fbb-a07d-27cab5150d8f"
   },
   "misc": {
     "account_id": "",
-    "iot_endpoint": "asueaux6o8ncd.iot.us-west-2.amazonaws.com",
+    "iot_endpoint": "a3l91q6khzvjii.iot.cn-north-1.amazonaws.com.cn",
     "policy_name": "ggc-default-policy"
   },
   "subscription_def": {

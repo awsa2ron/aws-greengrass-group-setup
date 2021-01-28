@@ -271,12 +271,18 @@ class GroupCommands(object):
                     "FunctionArn": alias_arn,
                     "FunctionConfiguration": {
                         "Environment": {
-                            "Variables": environment_variables
+                            "Variables": environment_variables,
+                            'Execution': {
+                                'IsolationMode': 'NoContainer',
+                                'RunAs': {
+                                    'Gid': 0,
+                                    'Uid': 0
+                                }
+                    },
                          },
                         "Executable": f['Configuration']['Handler'],
-                        "MemorySize":
-                            int(f['Configuration']['MemorySize']) * 1000,
-                        "Timeout": int(f['Configuration']['Timeout'])
+                        "Timeout": int(f['Configuration']['Timeout']),
+                        "Pinned": True
                     }
                 })  # function definition
             except Exception as e:
