@@ -275,7 +275,7 @@ class GroupCommands(object):
                          },
                         "Executable": f['Configuration']['Handler'],
                         "MemorySize":
-                            int(f['Configuration']['MemorySize']) * 1000,
+                            int(f['Configuration']['MemorySize']) * 1024,
                         "Timeout": int(f['Configuration']['Timeout'])
                     }
                 })  # function definition
