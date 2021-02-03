@@ -271,12 +271,18 @@ class GroupCommands(object):
                     "FunctionArn": alias_arn,
                     "FunctionConfiguration": {
                         "Environment": {
-                            "Variables": environment_variables
+                            "Variables": environment_variables,
+                            'Execution': {
+                                'IsolationMode': 'NoContainer',
+                                'RunAs': {
+                                    'Gid': 0,
+                                    'Uid': 0
+                                }
+                    },
                          },
                         "Executable": f['Configuration']['Handler'],
-                        "MemorySize":
-                            int(f['Configuration']['MemorySize']) * 1024,
-                        "Timeout": int(f['Configuration']['Timeout'])
+                        "Timeout": int(f['Configuration']['Timeout']),
+                        "Pinned": True
                     }
                 })  # function definition
             except Exception as e:
@@ -289,7 +295,12 @@ class GroupCommands(object):
             )
             lmbv = gg_client.create_function_definition_version(
                 FunctionDefinitionId=ll['Id'],
-                Functions=func_definition
+                Functions=func_definition,
+                DefaultConfig={
+                'Execution': {
+                    'IsolationMode': 'NoContainer'
+                }
+                }
             )
             # update config with latest function versions
             config['lambda_functions'] = latest_funcs
@@ -628,6 +639,46 @@ class GroupCommands(object):
         print("Group deploy requested for deployment_id:{0}".format(
             dep_req['DeploymentId'],
         ))
+    def create_gg_config_file(self,thing_name,thing_arn,iot_host,gg_host):
+         
+        gg_config = {
+            "coreThing" : {
+                "caPath" : "root.ca.pem",
+                "certPath" : thing_name+".pem",
+                "keyPath" : thing_name+".prv",
+                "thingArn" : thing_arn,
+                "iotHost" : iot_host,
+                "ggHost" : gg_host,
+                "keepAlive" : 600
+            },
+            "runtime" : {
+                "cgroup" : {
+                "useSystemd" : "yes"
+                },
+                "allowFunctionsToRunAsRoot" : "yes"
+            },
+            "managedRespawn" : False,
+            "crypto" : {
+                "principals" : {
+                "SecretsManager" : {
+                    "privateKeyPath" : "file:///greengrass/certs/"+thing_name+".prv"
+                },
+                "IoTCertificate" : {
+                    "privateKeyPath" : "file:///greengrass/certs/"+thing_name+".prv",
+                    "certificatePath" : "file:///greengrass/certs/"+thing_name+".pem"
+                }
+                },
+                "caPath" : "file:///greengrass/certs/root.ca.pem"
+            }
+            }
+        return gg_config
+
+    def get_gg_endpoint(self,region):
+        if region[0:2] == "cn" :
+            endpoint="greengrass.ats.iot."+region+".amazonaws.com.cn"
+        else:
+            endpoint="greengrass-ats.iot."+region+".amazonaws.com"
+        return endpoint
 
     def create_thing(self, thing_name, region=None, cert_dir=None, force=False):
         if region is None:
@@ -639,6 +690,12 @@ class GroupCommands(object):
         keys_cert = iot_client.create_keys_and_certificate(setAsActive=True)
         # Create a named Thing in the AWS IoT Service
         thing = iot_client.create_thing(thingName=thing_name)
+        thing_arn=thing['thingArn']
+        
+        # get and store the account's IoT endpoint for future use
+        ep = iot_client.describe_endpoint(endpointType='iot:Data-ATS')
+        iot_host=ep['endpointAddress']
+        gg_host=self.get_gg_endpoint(region=region)
         iot_client.update_thing(
             thingName=thing_name,
             attributePayload={
@@ -664,6 +721,15 @@ class GroupCommands(object):
             cert_name = cfg_dir + '/' + thing_name + ".pem"
             public_key_file = cfg_dir + '/' + thing_name + ".pub"
             private_key_file = cfg_dir + '/' + thing_name + ".prv"
+            gg_config_file = cfg_dir + '/' + thing_name + ".config.json"
+            
+            with open(gg_config_file, "w") as gg_config_file_link:
+                gg_config_file_content = self.create_gg_config_file(thing_name,thing_arn,iot_host,gg_host)
+                json.dump(gg_config_file_content, gg_config_file_link, indent=2)
+                # gg_config_file_link.write(gg_config_file_content)
+                logging.info("Thing Name: {0} and GG Config file: {1}".format(
+                    thing_name, gg_config_file))
+
             with open(cert_name, "w") as pem_file:
                 pem = keys_cert['certificatePem']
                 pem_file.write(pem)
@@ -762,7 +828,7 @@ class GroupCommands(object):
                         "iot:DeleteThingShadow",
                         "iot:UpdateThingShadow"
                     ],
-                    "Resource": [arn]
+                    "Resource": ["*"]
                 },
                 {
                     "Effect": "Allow",
@@ -914,3 +980,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

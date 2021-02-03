@@ -49,29 +49,11 @@ class MockGroupType(GroupType):
         d = config['devices']
         lamb = config['lambda_functions']
         s = config['subscriptions']
-
-        if 'GGD_example' in config['devices']:
-            thing_arn = config['devices']['GGD_example']['thing_arn']
-
-            return [
+        return [
                 {
                     "Id": "1",
-                    "Source": thing_arn,
-                    "Subject": s['telemetry'],
-                    "Target": lamb['MockDevice']['arn']
-                },
-                {
-                    "Id": "4",
-                    "Source": thing_arn,
-                    "Subject": s['telemetry'],
-                    "Target": "cloud"
-                },
-                {
-                    "Id": "14",
-                    "Source": lamb['MockDevice']['arn'],
-                    "Subject": s['errors'],
+                    "Source": lamb['opcua-adapter']['arn'],
+                    "Subject": "#",
                     "Target": "cloud"
                 }
             ]
-        else:
-            return None
